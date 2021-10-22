@@ -1,0 +1,46 @@
+allprojects {
+    group = 'kr.co.aist.bizletter'
+    version = '1.0-SNAPSHOT'
+}
+
+// todo 스프링 버전 빼야함
+ext {
+    cnbsoftUrl = 'https://nexus.cnbsoft.com'
+}
+
+//서브 프로젝트 공통 설정
+subprojects {
+    apply plugin: 'java'
+    apply plugin: 'maven-publish' // nexus 업로드를 위해
+
+    repositories {
+        mavenLocal()
+        mavenCentral()
+        maven {
+            url = "${cnbsoftUrl}/content/groups/public"
+        }
+
+        maven {
+            url = "${cnbsoftUrl}/content/repositories/thirdparty"
+        }
+
+        maven {
+            url = "${cnbsoftUrl}/content/public"
+        }
+    }
+
+    sourceCompatibility = '1.8'
+
+    tasks.withType(JavaCompile) {
+        options.encoding = 'UTF-8'
+    }
+
+    ext.profile = (!project.hasProperty('profile') || !profile) ? 'local' : profile
+    sourceSets {
+        main {
+            resources {
+                srcDirs "src/main/resources", "src/main/resources-${profile}"
+            }
+        }
+    }
+}
